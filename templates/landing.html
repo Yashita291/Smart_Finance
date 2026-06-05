@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block public %}
+<div style="background:linear-gradient(135deg,#0d1b2a,#0b6e63);min-height:100vh;color:#fff;font-family:'Manrope',sans-serif">
+  <nav class="container d-flex justify-content-between align-items-center py-4">
+    <span style="font-family:'Sora';font-weight:700;font-size:1.3rem"><i class="fa-solid fa-wallet"></i> SmartFinance</span>
+    <div>
+      <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm me-2">Login</a>
+      <a href="{% url 'register' %}" class="btn btn-light btn-sm text-dark fw-semibold">Get Started</a>
+    </div>
+  </nav>
+  <div class="container text-center py-5 mt-5">
+    <h1 style="font-family:'Sora';font-weight:700;font-size:3rem;letter-spacing:-.03em">Take control of your money.</h1>
+    <p class="lead mt-3 mx-auto" style="max-width:600px;opacity:.85">Track income and expenses, set budgets, hit savings goals, and get data-driven insights — all in one clean dashboard.</p>
+    <a href="{% url 'register' %}" class="btn btn-light btn-lg text-dark fw-semibold mt-3">Create free account</a>
+    <div class="row mt-5 g-4 text-start">
+      <div class="col-md-4"><div class="p-4 rounded-4" style="background:rgba(255,255,255,.08)"><i class="fa-solid fa-chart-pie fs-3 mb-2"></i><h5>Smart budgets</h5><p class="small opacity-75">Category-wise limits with live utilization tracking.</p></div></div>
+      <div class="col-md-4"><div class="p-4 rounded-4" style="background:rgba(255,255,255,.08)"><i class="fa-solid fa-bullseye fs-3 mb-2"></i><h5>Savings goals</h5><p class="small opacity-75">Set targets and watch progress build.</p></div></div>
+      <div class="col-md-4"><div class="p-4 rounded-4" style="background:rgba(255,255,255,.08)"><i class="fa-solid fa-lightbulb fs-3 mb-2"></i><h5>Insights</h5><p class="small opacity-75">Spot spending spikes before they hurt.</p></div></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

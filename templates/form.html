@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - SmartFinance{% endblock %}
+{% block content %}
+<h3 class="mb-4">{{ title }}</h3>
+<div class="card sf-card p-4" style="max-width:600px">
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}
+    {% for f in form %}
+      <div class="mb-3">
+        <label class="form-label">{{ f.label }}</label>{{ f }}
+        {% if f.help_text %}<div class="form-text small">{{ f.help_text|safe }}</div>{% endif %}
+        {% if f.errors %}<div class="text-danger small">{{ f.errors|striptags }}</div>{% endif %}
+      </div>
+    {% endfor %}
+    <button class="btn btn-accent">Save</button>
+    <a href="javascript:history.back()" class="btn btn-link">Cancel</a>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - SmartFinance{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div><h2 class="mb-0">Dashboard</h2><span class="text-muted">{{ month_label }}</span></div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'expense_create' %}" class="btn btn-accent btn-sm"><i class="fa-solid fa-plus"></i> Expense</a>
+    <a href="{% url 'income_create' %}" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-plus"></i> Income</a>
+    <a href="{% url 'budget_create' %}" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-plus"></i> Budget</a>
+    <a href="{% url 'reports' %}" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-file"></i> Report</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="card sf-card p-3"><span class="text-muted small">Income</span><span class="sf-stat sf-accent">₹{{ income|floatformat:0 }}</span></div></div>
+  <div class="col-md-3 col-6"><div class="card sf-card p-3"><span class="text-muted small">Expenses</span><span class="sf-stat text-danger">₹{{ expense|floatformat:0 }}</span></div></div>
+  <div class="col-md-3 col-6"><div class="card sf-card p-3"><span class="text-muted small">Balance</span><span class="sf-stat">₹{{ balance|floatformat:0 }}</span></div></div>
+  <div class="col-md-3 col-6"><div class="card sf-card p-3"><span class="text-muted small">Budget Used</span><span class="sf-stat">{{ budget_util }}%</span></div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7"><div class="card sf-card p-3"><h6 class="mb-3">Income vs Expense (6 months)</h6><canvas id="trendChart" height="140"></canvas></div></div>
+  <div class="col-lg-5"><div class="card sf-card p-3"><h6 class="mb-3">Spending by Category</h6><canvas id="catChart" height="180"></canvas></div></div>
+</div>
+
+<div class="row g-3 mt-1">
+  <div class="col-lg-7">
+    <div class="card sf-card p-3">
+      <h6 class="mb-3">Recent Transactions</h6>
+      <div class="table-responsive"><table class="table table-sm align-middle mb-0">
+        <thead><tr><th>Title</th><th>Category</th><th>Date</th><th class="text-end">Amount</th></tr></thead>
+        <tbody>
+        {% for e in recent %}
+          <tr><td>{{ e.title }}</td><td><span class="badge text-bg-light">{{ e.category.name }}</span></td><td class="small text-muted">{{ e.date }}</td><td class="text-end text-danger">₹{{ e.amount|floatformat:0 }}</td></tr>
+        {% empty %}<tr><td colspan="4" class="text-muted text-center py-3">No transactions yet.</td></tr>{% endfor %}
+        </tbody></table></div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card sf-card p-3">
+      <h6 class="mb-3">Upcoming Bills</h6>
+      {% for b in upcoming_bills %}
+        <div class="d-flex justify-content-between border-bottom py-2"><span>{{ b.name }}</span><span class="text-muted small">{{ b.due_date }} · ₹{{ b.amount|floatformat:0 }}</span></div>
+      {% empty %}<p class="text-muted small mb-0">No upcoming bills.</p>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+fetch("{% url 'chart_data' %}").then(r=>r.json()).then(d=>{
+  new Chart(document.getElementById('trendChart'),{type:'bar',data:{labels:d.trend.labels,
+    datasets:[{label:'Income',data:d.trend.income,backgroundColor:'#0f9d76'},
+              {label:'Expense',data:d.trend.expense,backgroundColor:'#e05260'}]},
+    options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
+  if(d.category.labels.length){
+    new Chart(document.getElementById('catChart'),{type:'doughnut',data:{labels:d.category.labels,
+      datasets:[{data:d.category.values,backgroundColor:['#0f9d76','#0b6e63','#e05260','#f0a500','#3a86ff','#8338ec','#fb5607','#06d6a0','#118ab2','#adb5bd']}]},
+      options:{plugins:{legend:{position:'bottom'}}}});
+  }
+});
+</script>
+{% endblock %}

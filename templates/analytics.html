@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<h3 class="mb-4">Analytics</h3>
+<div class="row g-3">
+  <div class="col-lg-8"><div class="card sf-card p-3"><h6>Income vs Expense Trend</h6><canvas id="trend" height="120"></canvas></div></div>
+  <div class="col-lg-4"><div class="card sf-card p-3"><h6>Category Breakdown</h6><canvas id="cat" height="200"></canvas></div></div>
+  <div class="col-lg-12"><div class="card sf-card p-3"><h6>Budget vs Actual</h6><canvas id="budget" height="80"></canvas></div></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+fetch("{% url 'chart_data' %}").then(r=>r.json()).then(d=>{
+  new Chart(document.getElementById('trend'),{type:'line',data:{labels:d.trend.labels,
+    datasets:[{label:'Income',data:d.trend.income,borderColor:'#0f9d76',tension:.3},
+              {label:'Expense',data:d.trend.expense,borderColor:'#e05260',tension:.3}]},
+    options:{plugins:{legend:{position:'bottom'}}}});
+  if(d.category.labels.length)
+    new Chart(document.getElementById('cat'),{type:'pie',data:{labels:d.category.labels,
+      datasets:[{data:d.category.values,backgroundColor:['#0f9d76','#0b6e63','#e05260','#f0a500','#3a86ff','#8338ec','#fb5607','#06d6a0','#118ab2','#adb5bd']}]},
+      options:{plugins:{legend:{position:'bottom'}}}});
+  if(d.budget.labels.length)
+    new Chart(document.getElementById('budget'),{type:'bar',data:{labels:d.budget.labels,
+      datasets:[{label:'Limit',data:d.budget.limit,backgroundColor:'#adb5bd'},
+                {label:'Spent',data:d.budget.spent,backgroundColor:'#0f9d76'}]},
+      options:{plugins:{legend:{position:'bottom'}}}});
+});
+</script>
+{% endblock %}

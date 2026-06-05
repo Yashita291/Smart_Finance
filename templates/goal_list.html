@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Savings Goals{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Savings Goals</h3>
+  <a href="{% url 'goal_create' %}" class="btn btn-accent btn-sm"><i class="fa-solid fa-plus"></i> Add</a>
+</div>
+<div class="row g-3">
+{% for g in goals %}
+  <div class="col-md-4">
+    <div class="card sf-card p-3">
+      <div class="d-flex justify-content-between"><strong>{{ g.name }}</strong>
+        <a href="{% url 'goal_delete' g.pk %}" class="text-danger small"><i class="fa-solid fa-trash"></i></a></div>
+      <div class="progress my-2" style="height:10px"><div class="progress-bar bg-success" style="width:{{ g.percent }}%"></div></div>
+      <div class="small text-muted">₹{{ g.current_amount|floatformat:0 }} / ₹{{ g.target_amount|floatformat:0 }} ({{ g.percent }}%)</div>
+      {% if g.deadline %}<div class="small text-muted">Deadline: {{ g.deadline }}</div>{% endif %}
+    </div>
+  </div>
+{% empty %}<div class="col-12"><p class="text-muted">No savings goals yet.</p></div>{% endfor %}
+</div>
+{% endblock %}

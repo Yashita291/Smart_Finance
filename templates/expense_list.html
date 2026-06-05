@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Expenses{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Expenses</h3>
+  <a href="{% url 'expense_create' %}" class="btn btn-accent btn-sm"><i class="fa-solid fa-plus"></i> Add</a>
+</div>
+<div class="card sf-card p-3 mb-3">
+  <form class="row g-2" method="get">
+    <div class="col-md-3"><input name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Search title"></div>
+    <div class="col-md-3"><select name="category" class="form-select form-select-sm"><option value="">All categories</option>{% for c in categories %}<option value="{{ c.id }}" {% if sel_cat == c.id|stringformat:'s' %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></div>
+    <div class="col-md-2"><input type="date" name="start" value="{{ start }}" class="form-control form-control-sm"></div>
+    <div class="col-md-2"><input type="date" name="end" value="{{ end }}" class="form-control form-control-sm"></div>
+    <div class="col-md-2"><button class="btn btn-sm btn-outline-secondary w-100">Filter</button></div>
+  </form>
+</div>
+<div class="card sf-card p-3">
+  <table class="table table-sm align-middle">
+    <thead><tr><th>Title</th><th>Category</th><th>Date</th><th>Method</th><th class="text-end">Amount</th><th></th></tr></thead>
+    <tbody>
+    {% for e in page %}
+      <tr><td>{{ e.title }}</td><td><span class="badge text-bg-light">{{ e.category.name }}</span></td><td class="small text-muted">{{ e.date }}</td><td class="small">{{ e.get_payment_method_display }}</td><td class="text-end text-danger">₹{{ e.amount|floatformat:0 }}</td>
+      <td class="text-end"><a href="{% url 'expense_edit' e.pk %}" class="text-secondary me-2"><i class="fa-solid fa-pen"></i></a><a href="{% url 'expense_delete' e.pk %}" class="text-danger"><i class="fa-solid fa-trash"></i></a></td></tr>
+    {% empty %}<tr><td colspan="6" class="text-center text-muted py-3">No expenses found.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  {% include "_pagination.html" %}
+</div>
+{% endblock %}

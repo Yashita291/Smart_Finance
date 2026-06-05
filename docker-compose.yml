@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: smartfinance
+      POSTGRES_USER: sf
+      POSTGRES_PASSWORD: sf_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sf"]
+      interval: 5s
+      retries: 5
+
+  web:
+    build: .
+    environment:
+      DJANGO_DEBUG: "False"
+      DJANGO_SECRET_KEY: "change-me-in-production"
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1"
+      DATABASE_URL: "postgres://sf:sf_password@db:5432/smartfinance"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

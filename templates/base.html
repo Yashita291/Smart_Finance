@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SmartFinance{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --sf-accent:#0f9d76; --sf-accent-2:#0b6e63; --sf-ink:#0d1b2a;
+      --sf-display:'Sora',sans-serif; --sf-body:'Manrope',sans-serif;
+    }
+    body{font-family:var(--sf-body);}
+    h1,h2,h3,h4,.navbar-brand{font-family:var(--sf-display);letter-spacing:-.02em;}
+    .navbar-brand{color:var(--sf-accent)!important;font-weight:700;}
+    .sf-card{border:none;border-radius:1rem;box-shadow:0 6px 24px rgba(13,27,42,.07);}
+    [data-bs-theme=dark] .sf-card{box-shadow:0 6px 24px rgba(0,0,0,.4);}
+    .sf-stat{font-family:var(--sf-display);font-size:1.6rem;font-weight:700;}
+    .sf-accent{color:var(--sf-accent);}
+    .btn-accent{background:var(--sf-accent);border-color:var(--sf-accent);color:#fff;}
+    .btn-accent:hover{background:var(--sf-accent-2);border-color:var(--sf-accent-2);color:#fff;}
+    .sf-side .nav-link{border-radius:.6rem;color:inherit;margin-bottom:.15rem;}
+    .sf-side .nav-link.active{background:var(--sf-accent);color:#fff;}
+    .sf-side .nav-link i{width:1.3rem;text-align:center;margin-right:.4rem;}
+  </style>
+</head>
+<body>
+{% if user.is_authenticated %}
+<nav class="navbar navbar-expand-lg border-bottom sticky-top bg-body">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand" href="{% url 'dashboard' %}"><i class="fa-solid fa-wallet"></i> SmartFinance</a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <div class="dropdown">
+        <a class="position-relative text-body" href="#" data-bs-toggle="dropdown">
+          <i class="fa-solid fa-bell fs-5"></i>
+          {% if unread_count %}<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ unread_count }}</span>{% endif %}
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" style="min-width:280px">
+          {% for n in unread_notifications %}<li class="dropdown-item small">{{ n.message }}</li>
+          {% empty %}<li class="dropdown-item small text-muted">No new notifications</li>{% endfor %}
+        </ul>
+      </div>
+      <button class="btn btn-sm btn-outline-secondary" id="themeToggle" type="button"><i class="fa-solid fa-moon"></i></button>
+      <div class="dropdown">
+        <a class="text-body text-decoration-none" href="#" data-bs-toggle="dropdown">
+          <i class="fa-solid fa-circle-user fs-5"></i> {{ user.username }}
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <form method="post" action="{% url 'logout' %}" class="px-2">{% csrf_token %}
+              <button class="btn btn-sm btn-outline-danger w-100">Logout</button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <aside class="col-lg-2 col-md-3 d-none d-md-block py-3 sf-side border-end" style="min-height:90vh">
+      <nav class="nav flex-column px-2">
+        {% with r=request.resolver_match.url_name %}
+        <a class="nav-link {% if r == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}"><i class="fa-solid fa-gauge"></i>Dashboard</a>
+        <a class="nav-link {% if 'expense' in r %}active{% endif %}" href="{% url 'expense_list' %}"><i class="fa-solid fa-receipt"></i>Expenses</a>
+        <a class="nav-link {% if 'income' in r %}active{% endif %}" href="{% url 'income_list' %}"><i class="fa-solid fa-money-bill-trend-up"></i>Income</a>
+        <a class="nav-link {% if 'budget' in r %}active{% endif %}" href="{% url 'budget_list' %}"><i class="fa-solid fa-chart-pie"></i>Budgets</a>
+        <a class="nav-link {% if 'goal' in r %}active{% endif %}" href="{% url 'goal_list' %}"><i class="fa-solid fa-bullseye"></i>Savings Goals</a>
+        <a class="nav-link {% if 'bill' in r %}active{% endif %}" href="{% url 'bill_list' %}"><i class="fa-solid fa-calendar-check"></i>Bills</a>
+        <a class="nav-link {% if r == 'reports' %}active{% endif %}" href="{% url 'reports' %}"><i class="fa-solid fa-file-lines"></i>Reports</a>
+        <a class="nav-link {% if r == 'analytics' %}active{% endif %}" href="{% url 'analytics' %}"><i class="fa-solid fa-chart-line"></i>Analytics</a>
+        <a class="nav-link {% if r == 'insights' %}active{% endif %}" href="{% url 'insights' %}"><i class="fa-solid fa-lightbulb"></i>AI Insights</a>
+        {% endwith %}
+      </nav>
+    </aside>
+    <main class="col-lg-10 col-md-9 py-4 px-4">
+      {% if messages %}{% for m in messages %}
+        <div class="alert alert-{{ m.tags }} alert-dismissible fade show">{{ m }}<button class="btn-close" data-bs-dismiss="alert"></button></div>
+      {% endfor %}{% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% else %}
+  {% block public %}{% endblock %}
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  const tt=document.getElementById('themeToggle');
+  if(tt){tt.addEventListener('click',()=>{
+    const h=document.documentElement,n=h.getAttribute('data-bs-theme')==='dark'?'light':'dark';
+    h.setAttribute('data-bs-theme',n);
+    tt.innerHTML=n==='dark'?'<i class="fa-solid fa-sun"></i>':'<i class="fa-solid fa-moon"></i>';
+  });}
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Budgets{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div><h3 class="mb-0">Budgets</h3><span class="text-muted small">{{ month|date:"F Y" }}</span></div>
+  <a href="{% url 'budget_create' %}" class="btn btn-accent btn-sm"><i class="fa-solid fa-plus"></i> Create</a>
+</div>
+<div class="row g-3">
+{% for b in budgets %}
+  <div class="col-md-6">
+    <div class="card sf-card p-3">
+      <div class="d-flex justify-content-between"><strong>{{ b.category.name }}</strong>
+        <a href="{% url 'budget_delete' b.pk %}" class="text-danger small"><i class="fa-solid fa-trash"></i></a></div>
+      <div class="progress my-2" style="height:10px">
+        <div class="progress-bar {% if b.percent_used > 100 %}bg-danger{% elif b.percent_used > 80 %}bg-warning{% else %}bg-success{% endif %}" style="width:{% if b.percent_used > 100 %}100{% else %}{{ b.percent_used }}{% endif %}%"></div>
+      </div>
+      <div class="d-flex justify-content-between small text-muted">
+        <span>Spent ₹{{ b.spent|floatformat:0 }} / ₹{{ b.limit_amount|floatformat:0 }}</span>
+        <span>{{ b.percent_used }}%</span>
+      </div>
+    </div>
+  </div>
+{% empty %}<div class="col-12"><p class="text-muted">No budgets set for this month.</p></div>{% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div><h3 class="mb-0">Reports</h3><span class="text-muted small">{{ month_label }}</span></div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'export_csv' %}" class="btn btn-outline-secondary btn-sm">CSV</a>
+    <a href="{% url 'export_excel' %}" class="btn btn-outline-secondary btn-sm">Excel</a>
+    <a href="{% url 'export_pdf' %}" class="btn btn-accent btn-sm">PDF</a>
+  </div>
+</div>
+<div class="row g-3 mb-3">
+  <div class="col-md-4"><div class="card sf-card p-3"><span class="text-muted small">Income</span><span class="sf-stat sf-accent">₹{{ income|floatformat:0 }}</span></div></div>
+  <div class="col-md-4"><div class="card sf-card p-3"><span class="text-muted small">Expenses</span><span class="sf-stat text-danger">₹{{ expense|floatformat:0 }}</span></div></div>
+  <div class="col-md-4"><div class="card sf-card p-3"><span class="text-muted small">Savings</span><span class="sf-stat">₹{{ savings|floatformat:0 }}</span></div></div>
+</div>
+<div class="card sf-card p-3">
+  <h6 class="mb-3">Top Spending Categories</h6>
+  <table class="table table-sm">
+    <thead><tr><th>Category</th><th class="text-end">Amount</th></tr></thead>
+    <tbody>{% for t in top %}<tr><td>{{ t.category__name }}</td><td class="text-end">₹{{ t.t|floatformat:0 }}</td></tr>
+    {% empty %}<tr><td colspan="2" class="text-muted text-center py-3">No data.</td></tr>{% endfor %}</tbody>
+  </table>
+</div>
+{% endblock %}

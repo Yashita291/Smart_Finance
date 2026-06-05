@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block public %}
+<div class="d-flex align-items-center justify-content-center" style="min-height:100vh;background:#0d1b2a">
+  <div class="card sf-card p-4" style="width:400px">
+    <h3 class="mb-3 sf-accent"><i class="fa-solid fa-wallet"></i> SmartFinance</h3>
+    <h5 class="mb-3">Welcome back</h5>
+    <form method="post">{% csrf_token %}
+      {% for f in form %}
+        <div class="mb-3"><label class="form-label">{{ f.label }}</label>
+          <input type="{% if f.name == 'password' %}password{% else %}text{% endif %}" name="{{ f.name }}" class="form-control" required>
+          {% if f.errors %}<div class="text-danger small">{{ f.errors|striptags }}</div>{% endif %}
+        </div>
+      {% endfor %}
+      {% if form.non_field_errors %}<div class="alert alert-danger py-2 small">{{ form.non_field_errors|striptags }}</div>{% endif %}
+      <button class="btn btn-accent w-100">Login</button>
+    </form>
+    <div class="d-flex justify-content-between mt-3 small">
+      <a href="{% url 'password_reset' %}">Forgot password?</a>
+      <a href="{% url 'register' %}">Create account</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
